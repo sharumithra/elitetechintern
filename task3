@@ -1,0 +1,77 @@
+# Import necessary libraries
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+
+# Load the dataset from a CSV file
+url = 'https://www.kaggle.com/datasets/uciml/pima-indians-diabetes-database/download?datasetVersionNumber=1'
+# Ensure the dataset is downloaded locally and loaded via pd.read_csv after download
+data = pd.read_csv('/content/drive/MyDrive/diabetes.csv')
+
+# Explore the dataset
+print(data.head())
+print(data.describe())
+
+# Split the dataset into features (X) and target (y)
+X = data.drop(columns='Outcome')  # Features (all columns except 'Outcome')
+y = data['Outcome']  # Target (whether a person has diabetes: 1 = Yes, 0 = No)
+
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# Standardize the features (since features like blood pressure, BMI, etc. are on different scales)
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+# Train a Logistic Regression model
+model = LogisticRegression()
+model.fit(X_train, y_train)
+
+# Make predictions on the test set
+y_pred = model.predict(X_test)
+
+# Evaluate the model
+accuracy = accuracy_score(y_test, y_pred)
+conf_matrix = confusion_matrix(y_test, y_pred)
+class_report = classification_report(y_test, y_pred)
+
+# Output the evaluation results
+print(f'Accuracy: {accuracy * 100:.2f}%')
+print('Confusion Matrix:')
+print(conf_matrix)
+print('Classification Report:')
+print(class_report)
+
+# Function to predict diabetes based on user input
+def predict_diabetes():
+    print("\nEnter the following details to predict diabetes:")
+    pregnancies = float(input("Number of pregnancies: "))
+    glucose = float(input("Glucose level: "))
+    blood_pressure = float(input("Blood pressure: "))
+    skin_thickness = float(input("Skin thickness: "))
+    insulin = float(input("Insulin level: "))
+    bmi = float(input("Body Mass Index (BMI): "))
+    diabetes_pedigree = float(input("Diabetes Pedigree Function: "))
+    age = float(input("Age: "))
+
+    # Combine the inputs into a feature array
+    user_data = [[pregnancies, glucose, blood_pressure, skin_thickness, insulin, bmi, diabetes_pedigree, age]]
+
+    # Scale the user input data (same scaling as training data)
+    user_data_scaled = scaler.transform(user_data)
+
+    # Predict the outcome
+    prediction = model.predict(user_data_scaled)
+
+    # Output the result
+    if prediction[0] == 1:
+        print("Prediction: The person is likely to have diabetes.")
+    else:
+        print("Prediction: The person is not likely to have diabetes.")
+
+# Call the function to predict diabetes based on user input
+predict_diabetes()
+
