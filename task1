@@ -1,0 +1,29 @@
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+df = pd.read_csv('https://raw.githubusercontent.com/mwaskom/seaborn-data/master/diamonds.csv')
+
+
+print(df.head())
+
+print(df.describe())
+
+
+print(df.isnull().sum())
+
+
+sns.pairplot(df[['carat', 'cut', 'color', 'price']], hue='cut')
+plt.show()
+
+plt.figure(figsize=(8, 5))
+sns.histplot(df['price'], kde=True, color='blue')
+plt.title('Distribution of Diamond Prices')
+plt.xlabel('Price')
+plt.ylabel('Frequency')
+plt.show()
+
+plt.figure(figsize=(10, 6))
+sns.boxplot(x='cut', y='price', data=df)
+plt.title('Price vs Cut')
+plt.show()
