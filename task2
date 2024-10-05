@@ -1,0 +1,42 @@
+import pandas as pd
+import plotly.express as px
+data = pd.DataFrame({
+    'Country': ['United States', 'China', 'India', 'United States', 'China', 'India'],
+    'Year': [2000, 2000, 2000, 2020, 2020, 2020],
+    'GDP per Capita': [36200, 959, 450, 63000, 10400, 2100],
+    'Life Expectancy': [77.1, 72.3, 63.5, 78.5, 76.9, 70.8]
+})
+fig = px.scatter(
+    data,
+    x='GDP per Capita',
+    y='Life Expectancy',
+    color='Country',
+    animation_frame='Year',
+    size='GDP per Capita',
+    hover_name='Country',
+    title='GDP per Capita vs Life Expectancy (2000-2020)',
+    labels={'GDP per Capita': 'GDP per Capita (USD)', 'Life Expectancy': 'Life Expectancy (Years)'}
+)
+fig.update_layout(
+    xaxis_title="GDP per Capita (USD)",
+    yaxis_title="Life Expectancy (Years)",
+    showlegend=True,
+)
+
+fig.show()
+from bokeh.plotting import figure, show, output_notebook
+from bokeh.models import ColumnDataSource
+from bokeh.palettes import Spectral6
+from bokeh.transform import factor_cmap
+
+output_notebook()
+
+source = ColumnDataSource(data)
+
+p = figure(title="GDP per Capita vs Life Expectancy",
+           x_axis_label="GDP per Capita (USD)",
+           y_axis_label="Life Expectancy (Years)")
+
+# Add circles for each country
+p.circle(x='GDP per Capita', y='Life Expectancy', source=source, size=10, color=factor_cmap('Country', palette=Spectral6, factors=data['Country'].unique()), legend_field='Country')
+show(p)
